@@ -3,7 +3,7 @@
 Source fork: https://github.com/n8guru/image-blaster, branch `forge/local-generation`.
 Producer evidence, not an independent verdict.
 
-- `node --test tests/forge-provider.test.mjs`: two tests pass, including one POST
+- `node --test tests/forge-provider.test.mjs`: three tests pass, including one POST
   across timeout/resume and no repeated submission after an ambiguous result.
 - JS syntax checks and shell syntax check pass.
 - Live original object proof: `464cef449a414ea68b4e49468f0335ba`, local TRELLIS,
@@ -23,7 +23,11 @@ Producer evidence, not an independent verdict.
   submit code now uses the promoted Forage boundary instead.
 - Final promoted image-submit proof: White House exterior clean plate, request
   saved in `worlds/white-house-local/source/.1-exterior-clean-plate-request.json`
-  (inspect actual index on disk). Do not claim complete until its result lands.
+  (inspect actual index on disk). Request `fe856fc69eb74395b3b91de2f09be308` now
+  reports success and is pollable through gen_request. Snapshot refreshed with
+  timestamp. The same source code submitted it through the promoted Python
+  bridge; body declared playground, but the recipe/front-door normalized it
+  to sfw_product. Media QC is qc_unavailable. No product promotion claimed.
 - Museum reference: https://www.metmuseum.org/art/collection/search/189401,
   API marks public domain. It is a stylistic analogue, not White House furniture.
 
@@ -36,3 +40,5 @@ has not entered this repository or agent output.
 This does not prove the complete White House, unrestricted building
 reconstruction, demo quality, Grove integration of separate movable furniture,
 or local replacement of World Labs. Those remain production work.
+
+Independent reviewer138065 FAIL: needs image-submit/resume tests and live resume proof. Bounded remediation138067 pending; do not activate fork as verified until focused re-review PASS.

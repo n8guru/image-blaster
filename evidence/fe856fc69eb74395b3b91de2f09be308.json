@@ -1,14 +1,14 @@
 {
-  "snapshot_at": "2026-10-04T01:34:04.356186+00:00",
-  "request_id": "34265d5fa767453a9e69fc854dcc3346",
+  "snapshot_at": "2026-10-04T01:34:04.357493+00:00",
+  "request_id": "fe856fc69eb74395b3b91de2f09be308",
   "render_status": "success",
   "engine": "qwen21",
   "recorded_purpose": "sfw_product",
   "results": [
     {
-      "id": "8daf024a2a4b49edade295ac7b2f914b",
+      "id": "54c07555504d4e978d453221e02a6639",
       "status": "success",
-      "output_path": "/home/n8/ComfyUI/output/image_blaster_local__446b4219.png",
+      "output_path": "/home/n8/ComfyUI/output/queue_2026_10_04__163c079b.png",
       "glb_path": null,
       "faces": null,
       "preview_kind": null,

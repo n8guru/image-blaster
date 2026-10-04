@@ -24,3 +24,15 @@ test('ambiguous submission is not silently repeated', async()=>{
  const dir=await mkdtemp(path.join(os.tmpdir(),'forge-ambiguous-'));const image=path.join(dir,'ref.png');await writeFile(image,'ref');const metadataPath=path.join(dir,'request.json');await writeFile(metadataPath,JSON.stringify({provider_slug:'forge',status:'submitting'}));
  await assert.rejects(runForge3D({image,metadataPath,outputDir:dir}),/outcome unknown/);
 });
+
+test('native object pipeline resumes scoped sidecar and produces indexed viewer asset',async()=>{
+ const {generateSingleObject}=await import('../.claude/scripts/asset-pipeline/generate-single-asset.mjs');
+ const dir=await mkdtemp(path.join(os.tmpdir(),'forge-native-'));const out=path.join(dir,'worlds/proof/output/chair');
+ const {mkdir}=await import('node:fs/promises');await mkdir(out,{recursive:true});await writeFile(path.join(out,'0-chair.png'),'reference');await writeFile(path.join(out,'object.json'),JSON.stringify({object:{id:'chair',name:'chair',source_images:[path.join(out,'0-chair.png')]}}));
+ const glb=path.join(dir,'generated.glb');await writeFile(glb,'glTFfixture');let posts=0;
+ const server=http.createServer((req,res)=>{if(req.method==='POST')posts++;res.setHeader('Content-Type','application/json');res.end(JSON.stringify({request:{render_status:'success'},results:[{status:'success',raw_metadata:{glb_path:glb}}]}));});await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));process.env.FORGE_GENERATION_URL=`http://127.0.0.1:${server.address().port}`;
+ await writeFile(path.join(out,'.0-chair__model-request.json'),JSON.stringify({provider_slug:'forge',kind:'3d',engine:'trellis',request_id:'already-submitted',endpoint:process.env.FORGE_GENERATION_URL+'/api/gen_request',status:'queued',index:0,input_files:[path.join(out,'0-chair.png')]}));
+ const previousCwd=process.cwd();
+ try {process.chdir(dir);const result=await generateSingleObject({world:'proof',objectId:'chair',modelProvider:'forge'});assert.deepEqual(result.model_files,['worlds/proof/output/chair/0-chair.glb']);assert.equal(posts,0);const record=JSON.parse(await readFile(path.join(out,'.0-chair__model-request.json')));assert.equal(record.request_id,'already-submitted');assert.equal(record.downloaded_files[0].path,result.model_files[0]);}
+ finally {process.chdir(previousCwd);delete process.env.FORGE_GENERATION_URL;await new Promise(resolve=>server.close(resolve));}
+});

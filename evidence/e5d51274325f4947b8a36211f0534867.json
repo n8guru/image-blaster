@@ -1,7 +1,9 @@
 {
+  "snapshot_at": "2026-10-04T01:34:04.354138+00:00",
   "request_id": "e5d51274325f4947b8a36211f0534867",
   "render_status": "success",
   "engine": "trellis",
+  "recorded_purpose": "sfw_product",
   "results": [
     {
       "id": "f942679bcc504279bdaa2176a2368f50",
