@@ -28,7 +28,7 @@ node .claude/scripts/image-edit/generate-edit.mjs \
   --output-slug "<output slug>"
 ```
 
-Optional provider override: `--provider nano-banana|gpt-image-2`.
+Optional provider override: `--provider forge|nano-banana|gpt-image-2`.
 
 If request metadata records provider URLs but local image files are missing, fill them from the matching hidden request JSON:
 

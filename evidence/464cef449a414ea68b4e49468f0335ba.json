@@ -1,0 +1,16 @@
+{
+  "request_id": "464cef449a414ea68b4e49468f0335ba",
+  "render_status": "success",
+  "engine": "trellis",
+  "results": [
+    {
+      "id": "66b4c1ae2adc4f768f7bc9f373d61541",
+      "status": "success",
+      "output_path": "/home/n8/ComfyUI/output/trellis/white_house_local_object_proof__032ab1a9.jpg",
+      "glb_path": "/home/n8/ComfyUI/output/trellis/genreq_464cef449a41.glb",
+      "faces": 44308,
+      "preview_kind": "interactive_glb",
+      "media_qc_status": "fail"
+    }
+  ]
+}

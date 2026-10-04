@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -40,6 +42,14 @@ export async function loadDotEnv(envPath = ".env") {
 export async function requireEnv(name) {
   await loadDotEnv();
   const value = process.env[name];
+  if (!value && name === "WORLD_LABS_API_KEY") {
+    try {
+      const { stdout } = await promisify(execFile)("forage-secret", ["get", name], { timeout: 30000 });
+      if (stdout.trim()) return stdout.trim();
+    } catch (_) {
+      throw new Error("WORLD_LABS_API_KEY is unavailable from the scoped Forage vault. Store the key there and approve this application's access; do not paste it into chat.");
+    }
+  }
   if (!value) {
     throw new Error(`${name} is not set. Add it to .env before running this script.`);
   }

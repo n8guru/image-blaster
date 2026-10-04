@@ -5,7 +5,8 @@ You are image-blaster, a set of CUTTING EDGE image-to-world skills, you can do t
 ## Setup
 
 1. Copy `.env.example` to `.env`.
-2. Set `WORLD_LABS_API_KEY` for worlds and `FAL_KEY` for 3D/SFX/image editing.
+2. This fork defaults to `forge` for image edits and 3D objects. Use the existing local Forage bridge for image requests and the governed Forge `gen_request` ingress for TRELLIS objects. No FAL key is needed for those stages.
+3. Full environment splats still use World Labs; a local scene backend is not implemented. Do not present manual blockouts or furniture meshes as a replacement for this stage. SFX also remains on the original provider. Report these capabilities separately; never ask for cloud keys or invoke paid stages unless Nate explicitly selects them.
 
 ## Directory Layout
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { runForge3D, resumeForgeRequest } from "./forge-queue.mjs";
 import { readdir, rename } from "node:fs/promises";
 import path from "node:path";
 import {
@@ -29,6 +30,7 @@ import {
   downloadRemoteFiles,
   ensureDir,
   getFalQueueResult,
+  loadDotEnv,
   one,
   parseArgs,
   pathExists,
@@ -50,8 +52,9 @@ import {
 const IMAGE_EXTENSIONS = new Set([".avif", ".gif", ".jpeg", ".jpg", ".png", ".webp"]);
 const MODEL_EXTENSIONS = new Set([".blend", ".fbx", ".glb", ".obj", ".stl", ".usdz"]);
 const GENERATED_OBJECT_FIELDS = new Set(["status"]);
-export const DEFAULT_3D_PROVIDER = HUNYUAN_3D_PROVIDER;
+export const DEFAULT_3D_PROVIDER = "forge";
 const MODEL_PROVIDER_ALIASES = new Map([
+  ["forge", "forge"],
   ["meshy", MESHY_3D_PROVIDER],
   ["fal-ai/meshy/v6/image-to-3d", MESHY_3D_PROVIDER],
   ["hunyuan", HUNYUAN_3D_PROVIDER],
@@ -115,11 +118,11 @@ function buildDirectObject({ objectId, objectName, description, image, world }) 
   };
 }
 
-function resolve3DProvider(value = DEFAULT_3D_PROVIDER) {
+function resolve3DProvider(value = process.env.ASSET_3D_PROVIDER || DEFAULT_3D_PROVIDER) {
   const normalized = String(value || DEFAULT_3D_PROVIDER).trim().toLowerCase();
   const provider = MODEL_PROVIDER_ALIASES.get(normalized);
   if (!provider) {
-    throw new Error(`Unsupported 3D provider "${value}". Use one of: meshy, hunyuan.`);
+    throw new Error(`Unsupported 3D provider "${value}". Use one of: meshy, hunyuan, forge.`);
   }
   return provider;
 }
@@ -133,6 +136,7 @@ function modelRequestPrefix(request, fallbackProvider) {
 
 async function run3DProvider(options) {
   const { provider } = options;
+  if (provider === "forge") return runForge3D(options);
   if (provider === HUNYUAN_3D_PROVIDER) {
     return runHunyuan3D(options);
   }
@@ -309,6 +313,7 @@ async function normalizeModelFiles(downloadedFiles, objectDir, objectId, request
 }
 
 async function resumeFalRequest(request, prefix, outputDir, pollIntervalMs = 5000) {
+  if (request.data.provider_slug === "forge") return resumeForgeRequest(request, outputDir);
   const status = await pollFalQueue(request.data.endpoint, request.data.request_id, {
     statusUrl: request.data.status_url,
     metadataPath: request.path,
@@ -348,6 +353,7 @@ async function resumeFalRequest(request, prefix, outputDir, pollIntervalMs = 500
 }
 
 export async function generateSingleObject(options) {
+  await loadDotEnv();
   const {
     world,
     objectId,
@@ -389,7 +395,7 @@ export async function generateSingleObject(options) {
   });
 
   const object = cleanObject(resolved.object, resolved.objectDir);
-  const provider = resolve3DProvider(modelProvider || object.model_provider || DEFAULT_3D_PROVIDER);
+  const provider = resolve3DProvider(modelProvider || object.model_provider || process.env.ASSET_3D_PROVIDER || DEFAULT_3D_PROVIDER);
   const regenerateModel = regenerate || regenerateReference;
   await ensureDir(resolved.objectDir);
   await writeObjectIntent(resolved.objectJsonPath, world, object);
@@ -592,7 +598,7 @@ async function main() {
 
   if (!world || (!objectId && !directImage)) {
     throw new Error(
-      "Usage: node generate-single-asset.mjs --world <world-name> (--object-id <object-id> | --image <path>) --image-edit-prompt <prompt> [--object-name <name>] [--description <text>] [--provider hunyuan|meshy] [--regenerate] [--regenerate-reference] [--reference-only] [--face-count <40000-1500000>] [--generate-type Normal|LowPoly|Geometry] [--polygon-type triangle|quadrilateral] [--target-polycount 30000] [--enable-pbr true|false]"
+      "Usage: node generate-single-asset.mjs --world <world-name> (--object-id <object-id> | --image <path>) --image-edit-prompt <prompt> [--object-name <name>] [--description <text>] [--provider hunyuan|meshy|forge] [--regenerate] [--regenerate-reference] [--reference-only] [--face-count <40000-1500000>] [--generate-type Normal|LowPoly|Geometry] [--polygon-type triangle|quadrilateral] [--target-polycount 30000] [--enable-pbr true|false]"
     );
   }
 

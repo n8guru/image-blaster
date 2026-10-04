@@ -1,7 +1,7 @@
 ---
 name: image-blast-3d
 description: Generate one specified atomic 3D object. Use when the user names exactly one object instance to make, or provides one image plus the object name/description.
-argument-hint: [world-name] [object-id/name or image path + object description] [--image-edit-prompt prompt] [--provider meshy|hunyuan] [--regenerate] [--regenerate-reference] [--target-polycount N] [--face-count N] [--generate-type Normal|LowPoly|Geometry] [--polygon-type triangle|quadrilateral] [--enable-pbr true|false]
+argument-hint: [world-name] [object-id/name or image path + object description] [--image-edit-prompt prompt] [--provider forge|meshy|hunyuan] [--regenerate] [--regenerate-reference] [--target-polycount N] [--face-count N] [--generate-type Normal|LowPoly|Geometry] [--polygon-type triangle|quadrilateral] [--enable-pbr true|false]
 allowed-tools: Read Write Glob Bash(ls *) Bash(node .claude/scripts/project/project-state.mjs *) Bash(node .claude/scripts/project/ensure-local-assets.mjs *) Bash(node .claude/scripts/asset-pipeline/generate-single-asset.mjs *)
 context: fork
 agent: image-blast-3d
@@ -56,7 +56,7 @@ If request metadata records provider URLs but local model or image files are mis
 node .claude/scripts/project/ensure-local-assets.mjs --from "<request-json-path>"
 ```
 
-Hunyuan is the default 3D provider. Hunyuan defaults are `--face-count 50000`, `--enable-pbr true`, and `--generate-type Normal`. If the user asks for more detail, polygon reduction, or a white geometry-only model, pass the matching options:
+Forge/TRELLIS is the default 3D provider in this fork. It writes local textured GLBs through the existing indexed/resumable pipeline. Hunyuan through FAL remains explicitly selectable. Hunyuan defaults are `--face-count 50000`, `--enable-pbr true`, and `--generate-type Normal`. If the user asks for more detail, polygon reduction, or a white geometry-only model, pass the matching options:
 
 - `--face-count <40000-1500000>`
 - `--generate-type Normal|LowPoly|Geometry`

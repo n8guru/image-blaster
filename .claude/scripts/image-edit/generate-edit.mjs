@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { resumeForgeRequest } from "../asset-pipeline/forge-queue.mjs";
 import { rename } from "node:fs/promises";
 import path from "node:path";
 import { runImageEdit } from "../asset-pipeline/image-edit.mjs";
@@ -47,6 +48,7 @@ function isActiveRequest(request) {
 }
 
 async function resumeImageEditRequest(request, outputDir, slug) {
+  if (request.data.provider_slug === "forge") return resumeForgeRequest(request, outputDir);
   const status = await pollFalQueue(request.data.endpoint, request.data.request_id, {
     statusUrl: request.data.status_url,
     metadataPath: request.path

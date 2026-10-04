@@ -1,13 +1,14 @@
 #!/usr/bin/env node
+import { runForgeImageEdit } from "./forge-queue.mjs";
 import { runGptImage2Edit } from "./gpt-image-2-edit.mjs";
 import { runNanoBananaEdit } from "./nano-banana-edit.mjs";
 import { loadDotEnv, many, one, parseArgs } from "./fal-queue.mjs";
 import { requestPath } from "./request-metadata.mjs";
 
-const PROVIDERS = new Set(["nano-banana", "gpt-image-2"]);
+const PROVIDERS = new Set(["nano-banana", "gpt-image-2", "forge"]);
 
 export function resolveImageEditProvider(provider) {
-  const resolved = provider || process.env.ASSET_IMAGE_EDIT_PROVIDER || "nano-banana";
+  const resolved = provider || process.env.ASSET_IMAGE_EDIT_PROVIDER || "forge";
   if (!PROVIDERS.has(resolved)) {
     throw new Error(
       `Unsupported image edit provider "${resolved}". Use one of: ${[...PROVIDERS].join(", ")}.`
@@ -21,7 +22,9 @@ export async function runImageEdit(options) {
   const provider = resolveImageEditProvider(options.provider);
   let summary;
 
-  if (provider === "gpt-image-2") {
+  if (provider === "forge") {
+    summary = await runForgeImageEdit({ ...options, metadataPath: options.metadataPath || requestPath(options.outputDir, 0, "image-edit") });
+  } else if (provider === "gpt-image-2") {
     summary = await runGptImage2Edit({
       ...options,
       metadataPath: options.metadataPath || requestPath(options.outputDir, 0, "image-edit"),

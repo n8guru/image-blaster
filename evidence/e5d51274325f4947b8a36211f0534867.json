@@ -1,0 +1,16 @@
+{
+  "request_id": "e5d51274325f4947b8a36211f0534867",
+  "render_status": "success",
+  "engine": "trellis",
+  "results": [
+    {
+      "id": "f942679bcc504279bdaa2176a2368f50",
+      "status": "success",
+      "output_path": "/home/n8/ComfyUI/output/trellis/image_blaster_local__55b3545e.jpg",
+      "glb_path": "/home/n8/ComfyUI/output/trellis/genreq_e5d51274325f.glb",
+      "faces": 20350,
+      "preview_kind": "interactive_glb",
+      "media_qc_status": "fail"
+    }
+  ]
+}
