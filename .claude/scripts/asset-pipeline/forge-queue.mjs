@@ -7,7 +7,7 @@ import { ensureDir, inferMime, loadDotEnv, pathExists, readJson, writeJson } fro
 // Use Generation OS's governed gen_request ingress, never raw ComfyUI.
 export async function runForgeGeneration(options) {
   await loadDotEnv();
-  const { metadataPath, outputDir, kind, engine, prompt, sampling = {}, image, images = [], metadata = {}, pollIntervalMs = 3000, timeoutMs = 900000 } = options;
+  const { metadataPath, outputDir, kind, engine, prompt, sampling = {}, image, images = [], metadata = {}, pollIntervalMs = 3000, timeoutMs = 900000, submitImage = submitImageThroughForage } = options;
   await ensureDir(outputDir);
   const endpoint = (process.env.FORGE_GENERATION_URL || 'http://100.70.241.41:8096').replace(/\/$/, '') + '/api/gen_request';
   const previous = metadataPath && await pathExists(metadataPath) ? await readJson(metadataPath) : {};
@@ -31,7 +31,7 @@ export async function runForgeGeneration(options) {
       body.sampling.references = images.map((url, index) => ({ url: /^https?:\/\//.test(url) ? url : path.resolve(url), name: `source_${index + 1}`, role: 'object', use_for: 'composite' }));
     }
     await writeJson(metadataPath, { ...metadata, kind, provider: 'forge', provider_slug: 'forge', endpoint, engine, status: 'submitting', submitted_at: new Date().toISOString(), input_files: inputs });
-    const accepted = kind === '3d' ? await request(endpoint, body) : await submitImageThroughForage({ type: 'image', backend: 'forge', engine, recipe_name: body.recipe, prompt, references: body.sampling.references, sampling: body.sampling, purpose: 'playground', wait: false });
+    const accepted = kind === '3d' ? await request(endpoint, body) : await submitImage({ type: 'image', backend: 'forge', engine, recipe_name: body.recipe, prompt, references: body.sampling.references, sampling: body.sampling, purpose: 'playground', wait: false });
     id = accepted.request_id || accepted.id;
     if (!id) throw new Error('Forge did not return a request ID.');
     // Persist immediately: timeout/restart must poll this same ID, not submit again.
@@ -69,7 +69,7 @@ export function runForgeImageEdit(options) {
   if (options.maskImage) throw new Error('Forge image adapter does not support masks yet.');
   if (Number(options.numImages || 1) !== 1) throw new Error('Forge image adapter produces one image per request.');
   if (process.env.FORGE_IMAGE_ENGINE && process.env.FORGE_IMAGE_ENGINE !== 'qwen21' && !process.env.FORGE_IMAGE_RECIPE) throw new Error('Set FORGE_IMAGE_RECIPE when changing the image engine.');
-  return runForgeGeneration({ ...options, kind: '2d', engine: process.env.FORGE_IMAGE_ENGINE || 'qwen21' });
+  return runForgeGeneration({ ...options, kind: '2d', engine: process.env.FORGE_IMAGE_ENGINE || 'qwen21', submitImage: options.submitImage });
 }
 export function resumeForgeRequest(request, outputDir) {
   return runForgeGeneration({ metadataPath: request.path, outputDir, kind: request.data.kind, engine: request.data.engine, image: request.data.input_files?.[0], images: request.data.input_files || [] });

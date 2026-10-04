@@ -1,9 +1,11 @@
 {
-  "snapshot_at": "2026-10-04T01:34:04.357493+00:00",
+  "snapshot_at": "2026-10-04T09:18:49.167228+00:00",
   "request_id": "fe856fc69eb74395b3b91de2f09be308",
   "render_status": "success",
   "engine": "qwen21",
   "recorded_purpose": "sfw_product",
+  "purpose_note": "Adapter submits purpose playground; gen_request front door normalized recorded_purpose to sfw_product. Not overwritten.",
+  "poll_surface": "http://100.70.241.41:8096/api/gen_request/fe856fc69eb74395b3b91de2f09be308",
   "results": [
     {
       "id": "54c07555504d4e978d453221e02a6639",

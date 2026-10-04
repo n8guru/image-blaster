@@ -41,4 +41,4 @@ This does not prove the complete White House, unrestricted building
 reconstruction, demo quality, Grove integration of separate movable furniture,
 or local replacement of World Labs. Those remain production work.
 
-Independent reviewer138065 FAIL: needs image-submit/resume tests and live resume proof. Bounded remediation138067 pending; do not activate fork as verified until focused re-review PASS.
+Image-bridge defect (reviews 138065 and 138073, still open at 138144): mock tests now cover 2d submit-once, gen_request poll/resume of the bridge id, and ambiguous-submit refusal. Resume-only proof of fe856fc69eb74395b3b91de2f09be308 polled GET /api/gen_request/<id>, returned success, and did not submit again. Duplicate forge-<id>.png from that resume was removed; indexed 1-exterior-clean-plate.png remains canonical. Remediation task 138146 (operator decision 2049562). Do not claim the full fork verified until a focused re-review PASS.
